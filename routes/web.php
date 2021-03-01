@@ -12,5 +12,5 @@
 |
 */
 
-$app->get('/', 'OpenDiscoveryController@frontpage');
-$app->get('/.well-known/opendiscovery/{id}.json', 'OpenDiscoveryController@lookup');
+$router->get('/', 'OpenDiscoveryController@frontpage');
+$router->get('/.well-known/opendiscovery/{id}.json', 'OpenDiscoveryController@lookup');
