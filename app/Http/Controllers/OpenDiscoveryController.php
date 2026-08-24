@@ -7,19 +7,9 @@ use Illuminate\Support\Str;
 
 class OpenDiscoveryController extends Controller
 {
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        //
-    }
-
     public function frontpage()
     {
-        return redirect("https://github.com/OpenDiscoveryBiz/root-provider");
+        return redirect('https://github.com/OpenDiscoveryBiz/root-provider');
     }
 
     public function lookup(Request $request, $id)
@@ -34,10 +24,10 @@ class OpenDiscoveryController extends Controller
         }
 
         $id = Str::upper($id);
-        $id = preg_replace("/[^A-Z0-9]+/", "", $id);
+        $id = preg_replace('/[^A-Z0-9]+/', '', $id);
 
         $idMatches = [];
-        if (!preg_match("/^([A-Z]{2,2})([A-Z0-9]+)$/", $id, $idMatches)) {
+        if (! preg_match('/^([A-Z]{2,2})([A-Z0-9]+)$/', $id, $idMatches)) {
             return response()->json([
                 'type' => 'official',
                 'error' => 'invalid_id',
@@ -47,7 +37,7 @@ class OpenDiscoveryController extends Controller
         $country = $idMatches[1];
         $localId = $idMatches[2];
 
-        $providerEnv = env('PROVIDER_'.$country);
+        $providerEnv = config('opendiscovery.providers.'.$country);
         if (empty($providerEnv)) {
             return response()->json([
                 'type' => 'official',
@@ -56,16 +46,16 @@ class OpenDiscoveryController extends Controller
             ], 404);
         }
 
-        $providers = explode(",", $providerEnv);
+        $providers = explode(',', $providerEnv);
 
         $response = [
             'type' => 'redirect',
             'id' => $country,
             'providers' => $providers,
-            'ttl' => (int) env('ROOT_TTL'),
+            'ttl' => config('opendiscovery.root_ttl'),
         ];
 
-        if (!empty($pretty)) {
+        if (! empty($pretty)) {
             return response()->json($response, 200, [], JSON_PRETTY_PRINT);
         }
 
